@@ -1,5 +1,6 @@
 package com.robopoes.tools.motorhat4j;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +11,7 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
-public class I2CController {
+public class I2CController implements Closeable {
 
 	private int address;
 	private I2CBus bus;
@@ -60,6 +61,11 @@ public class I2CController {
 
 	public int getAddress() {
 		return address;
+	}
+
+	@Override
+	public void close() throws IOException {
+		bus.close();
 	}
 
 }

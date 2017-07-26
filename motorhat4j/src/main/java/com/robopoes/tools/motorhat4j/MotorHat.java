@@ -1,5 +1,6 @@
 package com.robopoes.tools.motorhat4j;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.robopoes.tools.motorhat4j.motor.DCMotor;
 
-public class MotorHat {
+public class MotorHat implements Closeable {
 
 	// Registers/etc.
 	public static final int MODE1 = 0x00;
@@ -143,11 +144,23 @@ public class MotorHat {
 		controller.writeByteToRegister(ALL_LED_OFF_H, (byte) (off >> 8));
 	}
 
+	public void stopAll() throws IOException {
+		for(DCMotor m : dcMotors) {
+			setMotorDirection(m.getMotorNum(), MotorDirection.RELEASE);
+			setMotorSpeed(m.getMotorNum(), 0);
+		}
+	}
+	
 	public int getAddress(){
 		return address;
 	}
 
 	public int getFreq(){
 		return freq;
+	}
+
+	@Override
+	public void close() throws IOException {
+		controller.close();
 	}
 }
